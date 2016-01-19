@@ -1,0 +1,16 @@
+{
+  "name": "npm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parallelshell 'npm run stylus' 'npm run server'",
+    "stylus": "stylus -u autoprefixer-stylus -w ./stylus -o ./css",
+    "server": "browser-sync start --server ./ --files './css/*.css, ./js/**/*.js, ./*.html'"
+  },
+  "author": "konweb <align0711@gmail.com> (http://qiita.com/konweb)",
+  "license": "ISC",
+  "devDependencies": {
+    "parallelshell": "^2.0.0"
+  }
+}
