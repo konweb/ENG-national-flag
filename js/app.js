@@ -10,9 +10,10 @@ window.addEventListener("DOMContentLoaded", function(){
             };
   } )();
 
-  var camera,controls,scene,renderer,flagMesh;
+  var camera,controls,scene,renderer,flagMesh,paperMesh,particle,particles;
   var SEGX = 64;
   var SEGY = 64;
+  var PAPER_NUM = 5000;
   var canvas = document.getElementById("canvas");
   
   init();
@@ -42,24 +43,7 @@ window.addEventListener("DOMContentLoaded", function(){
      * ここに様々なオブジェクトを詰め込んでいく
      */
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0xffffff, 0.02);
-
-
-
-
-    /*
-     * パノラマ
-     */
-    // var panoroma         = new THREE.SphereGeometry( 20, 60, 40 );
-    // var panoromaImg      = THREE.ImageUtils.loadTexture("/images/panorama-resize.jpg", {}, function() {renderer.render(scene, camera);});
-    // var panoromaMaterial = new THREE.MeshBasicMaterial({map: panoromaImg});
-    // panoromaSphere       = new THREE.Mesh( panoroma, panoromaMaterial );
-    // panoroma.scale( -1, 1, 1 );
-    // scene.add( panoromaSphere );
-
-
-
-
+    // scene.fog = new THREE.FogExp2(0xffffff, 0.01);
 
     /* 
      * 旗の作成
@@ -88,6 +72,29 @@ window.addEventListener("DOMContentLoaded", function(){
     //影の有効化          
     planeMesh.receiveShadow = true;
     scene.add(planeMesh);
+
+    /*
+     * 紙吹雪の作成
+     */
+    var colors = [];
+    particles = new THREE.Geometry();
+    for (var n = 0; n < PAPER_NUM; n++) {
+      var vertex = new THREE.Vector3(0, 20, 0);
+      particle = new THREE.Vector3(0, 20, 0);
+      particle.velocity = new THREE.Vector3( 0, -Math.random(), 0 );
+      particles.vertices.push(particle);
+      var r = Math.floor(Math.random() * (255 - 0));
+      var g = Math.floor(Math.random() * (255 - 0));
+      var b = Math.floor(Math.random() * (255 - 0));
+      var color = new THREE.Color("rgb("+r+", "+g+", "+b+")");
+      colors.push(color);
+    }
+    particles.colors = colors;
+    var paperMaterial = new THREE.PointCloudMaterial({size: 3, vertexColors: true});
+    paperMesh = new THREE.PointCloud(particles,paperMaterial);
+    paperMesh.sortParticles = true;
+    console.log(particles);
+    scene.add( paperMesh );
   
     /*
      * 光源の作成
@@ -126,7 +133,7 @@ window.addEventListener("DOMContentLoaded", function(){
   
     // 大きさの定義
     renderer.setSize(width, height);
-    renderer.setClearColor(0xffffff, 1);
+    renderer.setClearColor(0x000000, 1);
     renderer.shadowMapEnabled = true;
   
     // DOMにcanvasを追加
@@ -149,14 +156,15 @@ window.addEventListener("DOMContentLoaded", function(){
   var startData = new Date();
   function animate(){
     requestAnimationFrame(animate);
-    // controls.update();
+    controls.update();
+
 
     flagMesh.geometry.verticesNeedUpdate = true;
     var time = (new Date() - startData)/1000;
     for (var i=0;i<SEGX+1;i++) {
       for (var j=0;j<SEGY+1;j++) {
         //(i,j)のvertexを得る
-        var index = j * (SEGX + 1) + i % (SEGX + 1);
+        var index = j * (SEGX +TNGA 1) + i % (SEGX + 1);
         var vertex = flagMesh.geometry.vertices[index];
         //時間経過と頂点の位置によって波を作る
         var amp = 0.5 * noise.perlin3(i/500+time/5,j/70,time);
@@ -166,9 +174,15 @@ window.addEventListener("DOMContentLoaded", function(){
     }
 
     var timer = Date.now();
-    camera.position.x = 15 * Math.sin( timer / 50 * Math.PI / 360 );
-    camera.position.z = 15 * Math.cos( timer / 50 * Math.PI / 360 );
-    camera.lookAt( scene.position );
+    // camera.position.x = 15 * Math.sin( timer / 50 * Math.PI / 360 );
+    // camera.position.z = 15 * Math.cos( timer / 50 * Math.PI / 360 );
+    // camera.lookAt( scene.position );
+
+    // for (var n = 0; n < PAPER_NUM; n++) {
+    //   particles.vertices[n].velocity.y -= 0.03;
+    //   particles.vertices[n].add(particles.vertices[n].velocity);
+    // }
+    // paperMesh.geometry.__dirtyVertices = true;
 
     render();
   }
