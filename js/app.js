@@ -164,7 +164,7 @@ window.addEventListener("DOMContentLoaded", function(){
     for (var i=0;i<SEGX+1;i++) {
       for (var j=0;j<SEGY+1;j++) {
         //(i,j)のvertexを得る
-        var index = j * (SEGX +TNGA 1) + i % (SEGX + 1);
+        var index = j * (SEGX + 1) + i % (SEGX + 1);
         var vertex = flagMesh.geometry.vertices[index];
         //時間経過と頂点の位置によって波を作る
         var amp = 0.5 * noise.perlin3(i/500+time/5,j/70,time);
