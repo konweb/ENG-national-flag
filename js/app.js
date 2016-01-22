@@ -10,16 +10,21 @@ window.addEventListener("DOMContentLoaded", function(){
             };
   } )();
 
-  var camera,controls,scene,renderer,flagMesh,paperMesh,particle,particles,cubeParent;
-  var SEGX = 64;
-  var SEGY = 64;
+  var camera,controls,scene,renderer,flagMesh,cubeParent;
+  var SEGX      = 64;
+  var SEGY      = 64;
   var PAPER_NUM = 2000;
-  var canvas = document.getElementById("canvas");
+  var canvas    = document.getElementById("canvas");
+  var stats     = new Stats();
   
   init();
   render();
+  stats_init();
   animate();
 
+  /**
+   * 初期設定
+  */
   function init(){
     /*
      * カメラを用意
@@ -132,7 +137,7 @@ window.addEventListener("DOMContentLoaded", function(){
   }
 
 
-  /* 
+  /** 
    * 描画処理
    * レンダラー.render(シーン, カメラ)
    */
@@ -140,21 +145,49 @@ window.addEventListener("DOMContentLoaded", function(){
     renderer.render(scene, camera);
   }
 
-  /*
+  /**
    * アニメーション
    */
-  var startData = new Date();
   function animate(){
     requestAnimationFrame(animate);
 
     // TrackballControlsを更新
     controls.update();
 
-    // 旗アニメーション
+    // 旗オブジェクト
+    update_flag();
+
+    // カメラ
+    // update_camera();
+
+    // 紙吹雪オブジェクト
+    update_cube();
+
+    // stats.js
+    update_stats();
+
+    render();
+  }
+
+  /**
+   * カメラ 更新処理
+   */
+  function update_camera(){
+    var timer = Date.now();
+    camera.position.x = 15 * Math.sin( timer / 50 * Math.PI / 360 );
+    camera.position.z = 15 * Math.cos( timer / 50 * Math.PI / 360 );
+    camera.lookAt( scene.position );
+  }
+
+  /**
+   * 旗オブジェクト 更新処理
+   */
+  var startData = new Date();
+  function update_flag(){
     flagMesh.geometry.verticesNeedUpdate = true;
     var time = (new Date() - startData)/1000;
-    for (var i=0; i<SEGX+1;i++) {
-      for (var j=0;j<SEGY+1;j++) {
+    for (var i = 0;i < SEGX+1;i++) {
+      for (var j = 0;j < SEGY+1;j++) {
         //(i,j)のvertexを得る
         var index = j * (SEGX + 1) + i % (SEGX + 1);
         var vertex = flagMesh.geometry.vertices[index];
@@ -164,14 +197,12 @@ window.addEventListener("DOMContentLoaded", function(){
         vertex.z = amp * Math.sin( -i/2 + time*15 );
       }
     }
+  }
 
-    // カメラアニメーション
-    // var timer = Date.now();
-    // camera.position.x = 15 * Math.sin( timer / 50 * Math.PI / 360 );
-    // camera.position.z = 15 * Math.cos( timer / 50 * Math.PI / 360 );
-    // camera.lookAt( scene.position );
-
-    // 紙吹雪アニメーション
+  /**
+   * 紙吹雪オブジェクト 更新処理
+   */
+  function update_cube(){
     for (var i = 0; i < PAPER_NUM; i++) {
       cubeParent.children[i].rotation.x += Math.random(1 * 0) * 0.3;
       cubeParent.children[i].rotation.y += Math.random(1 * 0) * 0.3;
@@ -182,7 +213,25 @@ window.addEventListener("DOMContentLoaded", function(){
         cubeParent.children[i].position.y = Math.random() * (200 - 30) + 30;
       }
     }
+  }
 
-    render();
+  /**
+   * stats.js 初期設定
+   */
+  function stats_init(){
+    stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.left = '0px';
+    stats.domElement.style.top = '0px';
+    document.body.appendChild( stats.domElement );
+  }
+
+  /**
+   * stats.js 更新
+   */
+  function update_stats(){
+    stats.begin();
+    // monitored code goes here
+    stats.end();
   }
 });
