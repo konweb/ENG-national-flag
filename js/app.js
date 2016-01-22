@@ -153,7 +153,7 @@ window.addEventListener("DOMContentLoaded", function(){
     // 旗アニメーション
     flagMesh.geometry.verticesNeedUpdate = true;
     var time = (new Date() - startData)/1000;
-    for (var i=0;i<SEGX+1;i++) {
+    for (var i=0; i<SEGX+1;i++) {
       for (var j=0;j<SEGY+1;j++) {
         //(i,j)のvertexを得る
         var index = j * (SEGX + 1) + i % (SEGX + 1);
@@ -177,6 +177,10 @@ window.addEventListener("DOMContentLoaded", function(){
       cubeParent.children[i].rotation.y += Math.random(1 * 0) * 0.3;
       cubeParent.children[i].position.x += Math.random(1 * 0) * 0.3;
       cubeParent.children[i].position.y -= Math.random(1 * 0) * 0.3;
+      if(cubeParent.children[i].position.y < -30){
+        cubeParent.children[i].position.x = Math.random() * (-200 - 0);
+        cubeParent.children[i].position.y = Math.random() * (200 - 30) + 30;
+      }
     }
 
     render();
