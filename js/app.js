@@ -10,7 +10,7 @@ window.addEventListener("DOMContentLoaded", function(){
             };
   } )();
 
-  var camera,controls,scene,renderer,flagMesh,cubeParent;
+  var camera,controls,scene,renderer,flagMesh,cubeParent,lightGroup;
   var SEGX      = 64;
   var SEGY      = 64;
   var PAPER_NUM = 2000;
@@ -57,7 +57,7 @@ window.addEventListener("DOMContentLoaded", function(){
     /* 
      * 旗の作成
      */
-    var flag         = new THREE.PlaneGeometry(7.5, 5, SEGX, SEGY);
+    var flag         = new THREE.PlaneGeometry(15, 10, SEGX, SEGY);
     var flagImg      = THREE.ImageUtils.loadTexture("/images/flag.png", {}, function() {renderer.render(scene, camera);});
     var flagMaterial = new THREE.MeshLambertMaterial( {color: 0xffffff, side: THREE.DoubleSide, map: flagImg} );
     flagMesh         = new THREE.Mesh(flag, flagMaterial);
@@ -72,7 +72,7 @@ window.addEventListener("DOMContentLoaded", function(){
 
     // 画像を読み込み 画像が読み込まれる前に描画されている？ため上手く読み込めない。renderer.render()を走らせる
     var lawnImg       = THREE.ImageUtils.loadTexture("/images/lawn.png", {}, function() {renderer.render(scene, camera);});
-    var planeMaterial = new THREE.MeshLambertMaterial({side: THREE.DoubleSide, map: lawnImg});
+    var planeMaterial = new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color: 0x000});
     var planeMesh     = new THREE.Mesh(plane, planeMaterial);
 
     // x軸を90度回転
@@ -99,32 +99,64 @@ window.addEventListener("DOMContentLoaded", function(){
     /*
      * 光源の作成
      */
-    var lightParent = new THREE.Object3D();
-    var light       = new THREE.SpotLight( 0xffffff, 1.5 );
-    var light2      = new THREE.SpotLight( 0xffffff, 1.0 );
-    var light3      = new THREE.SpotLight( 0xffffff, 1.0 );
+    // var lightParent = new THREE.Object3D();
+    // var light       = new THREE.SpotLight( 0xffffff, 1.5 );
+    // var light2      = new THREE.SpotLight( 0xffffff, 1.0 );
+    // var light3      = new THREE.SpotLight( 0xffffff, 1.0 );
 
-    light.position.set( 100, 300, 300 );
-    light2.position.set( 100, 300, -500 );
-    light3.position.set( 0, -300, 0 );
+    // light.position.set( 100, 300, 300 );
+    // light2.position.set( 100, 300, -500 );
+    // light3.position.set( 0, -300, 0 );
 
-    lightParent.add(light);
-    lightParent.add(light2);
-    lightParent.add(light3);
-    lightParent.castShadow = true;
-    lightParent.shadowCameraNear = true;
-    scene.add(lightParent);
+    // lightParent.add(light);
+    // lightParent.add(light2);
+    // lightParent.add(light3);
+    // lightParent.castShadow = true;
+    // lightParent.shadowCameraNear = true;
 
-    /*
-     * lightヘルパー
-     */
-    var lighthelper = new THREE.SpotLightHelper(light, 1);
-    scene.add(lighthelper);
-    lighthelper = new THREE.SpotLightHelper(light2, 1);
-    scene.add(lighthelper);
-    lighthelper = new THREE.SpotLightHelper(light3, 1);
-    scene.add(lighthelper);
-  
+    // /*
+    //  * lightヘルパー
+    //  */
+    // var lighthelper = new THREE.SpotLightHelper(light, 1);
+    // scene.add(lighthelper);
+    // lighthelper = new THREE.SpotLightHelper(light2, 1);
+    // scene.add(lighthelper);
+    // lighthelper = new THREE.SpotLightHelper(light3, 1);
+    // scene.add(lighthelper);
+
+
+
+    scene.add( new THREE.AmbientLight( 0x111111 ) );
+    var intensity        = 2.5;
+    var distance         = 500;
+    var lightColors      = [0xffffff, 0xff0040, 0x0040ff, 0x80ff80, 0xffaa00, 0x00ffaa, 0xff1100, 0xff0040];
+    var lightPosi        = [
+      0, 5, 30,
+      -20, 5, 20,
+      -30, 5, 0,
+      -20, 5, -20,
+      0, 5, -30,
+      20, 5, -20,
+      30, 5, 0,
+      20, 5, 20
+    ];
+    var lighthelperGroup = new THREE.Object3D();
+    lightGroup           = new THREE.Object3D();
+
+    for(var i = 0;i < 8;i++){
+      var light        = new THREE.PointLight(lightColors[i], intensity, distance);
+      light.position.x = lightPosi[i*3];
+      light.position.y = lightPosi[i*3+1];
+      light.position.z = lightPosi[i*3+2];
+      light.rotation.x = 145;
+      lightGroup.add(light);
+      lighthelperGroup.add(new THREE.PointLightHelper(light, 1));
+    }
+    lightGroup.castShadow = true;
+    lightGroup.shadowCameraNear = true;
+    scene.add(lightGroup);
+    scene.add(lighthelperGroup);
+
     /* 
      * レンダラーを用意
      * 実際に描画を行うための処理
@@ -167,9 +199,13 @@ window.addEventListener("DOMContentLoaded", function(){
     // 紙吹雪オブジェクト
     update_cube();
 
+    // ライトオブジェクト
+    update_light();
+
     // stats.js
     update_stats();
 
+    // 描画の更新
     render();
   }
 
@@ -217,6 +253,18 @@ window.addEventListener("DOMContentLoaded", function(){
         cubeParent.children[i].position.y = Math.random() * (200 - 30) + 30;
       }
     }
+  }
+
+  function update_light(){
+    var timer = Date.now();
+    // for(var i = 0;i < 8;i++){
+    //   var ligth = lightGroup.children[i];
+    //   ligth.position.x = (Math.random() * 15) * Math.sin( timer / 10 * Math.PI / 360 );
+    //   ligth.position.z = (Math.random() * 15) * Math.cos( timer / 10 * Math.PI / 360 );
+    // }
+    // lightGroup.rotation.x += Math.random() * 0.05;
+    lightGroup.rotation.y += 0.01;
+    // lightGroup.rotation.z += Math.random() * 0.05;
   }
 
   /**
