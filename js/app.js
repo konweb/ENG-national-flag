@@ -42,6 +42,10 @@ window.addEventListener("DOMContentLoaded", function(){
      */
     controls = new THREE.TrackballControls( camera,canvas );
     controls.addEventListener( 'change', render );
+    controls.rotateSpeed = 0.5; //回転の速さ
+    controls.zoomSpeed   = 0.5; //ズームの速さ
+    controls.minDistance = 10; //最小値
+    controls.maxDistance = 100; //最大値
   
     /*
      * シーンの準備
