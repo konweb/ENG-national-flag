@@ -10,10 +10,10 @@ window.addEventListener("DOMContentLoaded", function(){
             };
   } )();
 
-  var camera,controls,scene,renderer,flagMesh,paperMesh,particle,particles;
+  var camera,controls,scene,renderer,flagMesh,paperMesh,particle,particles,cubeParent;
   var SEGX = 64;
   var SEGY = 64;
-  var PAPER_NUM = 5000;
+  var PAPER_NUM = 2000;
   var canvas = document.getElementById("canvas");
   
   init();
@@ -76,26 +76,17 @@ window.addEventListener("DOMContentLoaded", function(){
     /*
      * 紙吹雪の作成
      */
-    var colors = [];
-    particles = new THREE.Geometry();
-    for (var n = 0; n < PAPER_NUM; n++) {
-      var vertex = new THREE.Vector3(0, 20, 0);
-      particle = new THREE.Vector3(0, 20, 0);
-      particle.velocity = new THREE.Vector3( 0, -Math.random(), 0 );
-      particles.vertices.push(particle);
-      var r = Math.floor(Math.random() * (255 - 0));
-      var g = Math.floor(Math.random() * (255 - 0));
-      var b = Math.floor(Math.random() * (255 - 0));
-      var color = new THREE.Color("rgb("+r+", "+g+", "+b+")");
-      colors.push(color);
+    cubeParent = new THREE.Object3D();
+    var cubeItem = new THREE.CubeGeometry(1, 2, 0.08);
+    for (var i = 0; i < PAPER_NUM; i++) {
+      var object = new THREE.Mesh( cubeItem, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+      object.position.x = Math.random() * (-200 - 0);
+      object.position.y = Math.random() * (200 - 30) + 30;
+      object.position.z = Math.random() * (100 - -100) - 100;
+      cubeParent.add(object);
     }
-    particles.colors = colors;
-    var paperMaterial = new THREE.PointCloudMaterial({size: 3, vertexColors: true});
-    paperMesh = new THREE.PointCloud(particles,paperMaterial);
-    paperMesh.sortParticles = true;
-    console.log(particles);
-    scene.add( paperMesh );
-  
+    scene.add( cubeParent );
+
     /*
      * 光源の作成
      */
@@ -151,14 +142,15 @@ window.addEventListener("DOMContentLoaded", function(){
 
   /*
    * アニメーション
-   * TrackballControlsを更新
    */
   var startData = new Date();
   function animate(){
     requestAnimationFrame(animate);
+
+    // TrackballControlsを更新
     controls.update();
 
-
+    // 旗アニメーション
     flagMesh.geometry.verticesNeedUpdate = true;
     var time = (new Date() - startData)/1000;
     for (var i=0;i<SEGX+1;i++) {
@@ -173,16 +165,19 @@ window.addEventListener("DOMContentLoaded", function(){
       }
     }
 
-    var timer = Date.now();
+    // カメラアニメーション
+    // var timer = Date.now();
     // camera.position.x = 15 * Math.sin( timer / 50 * Math.PI / 360 );
     // camera.position.z = 15 * Math.cos( timer / 50 * Math.PI / 360 );
     // camera.lookAt( scene.position );
 
-    // for (var n = 0; n < PAPER_NUM; n++) {
-    //   particles.vertices[n].velocity.y -= 0.03;
-    //   particles.vertices[n].add(particles.vertices[n].velocity);
-    // }
-    // paperMesh.geometry.__dirtyVertices = true;
+    // 紙吹雪アニメーション
+    for (var i = 0; i < PAPER_NUM; i++) {
+      cubeParent.children[i].rotation.x += Math.random(1 * 0) * 0.3;
+      cubeParent.children[i].rotation.y += Math.random(1 * 0) * 0.3;
+      cubeParent.children[i].position.x += Math.random(1 * 0) * 0.3;
+      cubeParent.children[i].position.y -= Math.random(1 * 0) * 0.3;
+    }
 
     render();
   }
