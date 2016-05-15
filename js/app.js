@@ -62,7 +62,7 @@ window.addEventListener("DOMContentLoaded", function(){
     var flagMaterial = new THREE.MeshLambertMaterial( {color: 0xffffff, side: THREE.DoubleSide, map: flagImg} );
     flagMesh         = new THREE.Mesh(flag, flagMaterial);
     flagMesh.castShadow = true;
-    flagMesh.position.y = 0;
+    flagMesh.position.y = 3;
     scene.add(flagMesh);
 
     /*
@@ -102,8 +102,9 @@ window.addEventListener("DOMContentLoaded", function(){
     var lightParent = new THREE.Object3D();
     light           = new THREE.SpotLight( 0xffffff );
 
-    light.intensity = 2.4;
-    light.angle     = 0.5;
+    light.intensity  = 2.4;
+    light.angle      = 0.5;
+    light.castShadow = true;
     light.position.set( 200, 250, 200 );
 
     scene.add(light);
@@ -210,18 +211,6 @@ window.addEventListener("DOMContentLoaded", function(){
         cubeParent.children[i].position.y = Math.random() * (200 - 30) + 30;
       }
     }
-  }
-
-  function update_light(){
-    var timer = Date.now();
-    // for(var i = 0;i < 8;i++){
-    //   var ligth = lightGroup.children[i];
-    //   ligth.position.x = (Math.random() * 15) * Math.sin( timer / 10 * Math.PI / 360 );
-    //   ligth.position.z = (Math.random() * 15) * Math.cos( timer / 10 * Math.PI / 360 );
-    // }
-    // lightGroup.rotation.x += Math.random() * 0.05;
-    lightGroup.rotation.y += 0.01;
-    // lightGroup.rotation.z += Math.random() * 0.05;
   }
 
   /**
