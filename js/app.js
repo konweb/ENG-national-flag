@@ -10,6 +10,17 @@ window.addEventListener("DOMContentLoaded", function(){
             };
   } )();
 
+  // マウスコントローラー
+  var trackballControlParams = {
+    'rotateSpeed'          : 0.5,   // 回転の速さ
+    'zoomSpeed'            : 0.5,   // ズームの速さ
+    'minDistance'          : 10,    // 最小値
+    'maxDistance'          : 300,   // 最大値
+    'panSpeed'             : 1.0,   // パン速度の設定
+    'staticMoving'         : false, // true:スタティックムーブ false:ダイナミックムーブ
+    'dynamicDampingFactor' : 0.2    // ダイナミックムーブ減衰値
+  };
+
   // Font
   var fontParams = {
     'color'         : '#095ebe',
@@ -64,13 +75,13 @@ window.addEventListener("DOMContentLoaded", function(){
      */
     controls = new THREE.TrackballControls( camera,canvas );
     controls.addEventListener( 'change', render );
-    controls.rotateSpeed          = 0.5;   // 回転の速さ
-    controls.zoomSpeed            = 0.5;   // ズームの速さ
-    controls.minDistance          = 10;    // 最小値
-    controls.maxDistance          = 300;   // 最大値
-    controls.panSpeed             = 1.0;   // パン速度の設定
-    controls.staticMoving         = false; // true:スタティックムーブ false:ダイナミックムーブ
-    controls.dynamicDampingFactor = 0.2;   // ダイナミックムーブ減衰値
+    controls.rotateSpeed          = trackballControlParams.rotateSpeed;
+    controls.zoomSpeed            = trackballControlParams.zoomSpeed;
+    controls.minDistance          = trackballControlParams.minDistance;
+    controls.maxDistance          = trackballControlParams.maxDistance;
+    controls.panSpeed             = trackballControlParams.panSpeed;
+    controls.staticMoving         = trackballControlParams.staticMoving;
+    controls.dynamicDampingFactor = trackballControlParams.dynamicDampingFactor;
   
     /*
      * シーンの準備
@@ -305,24 +316,9 @@ window.addEventListener("DOMContentLoaded", function(){
     this.angle     = 0.4;
   };
 
-  // GUIパラメータ マウスコントローラー用
-  var DatParamMouse = function() {
-    this.rotateSpeed          = 0.5;
-    this.zoomSpeed            = 0.5;
-    this.minDistance          = 10;
-    this.maxDistance          = 300;
-    this.panSpeed             = 1.0;
-    this.staticMoving         = false;
-    this.dynamicDampingFactor = 0.2;
-    this.noRotate             = false;
-    this.noZoom               = false;
-    this.noPan                = false;
-  };
-
   function dat_gui_init() {
     var gui                = new dat.GUI();
     var datParamLight      = new DatParamLight();
-    var datParamMouse      = new DatParamMouse();
     var lightFolder        = gui.addFolder('Lights');
     var mouseControlFolder = gui.addFolder('mouseControls');
     var fontFolder         = gui.addFolder('Fonts');
@@ -344,34 +340,34 @@ window.addEventListener("DOMContentLoaded", function(){
       light.angle = val;
     });
 
-    mouseControlFolder.add(datParamMouse, 'rotateSpeed', 0.1, 10).step(0.1).onChange(function(val){
+    mouseControlFolder.add(trackballControlParams, 'rotateSpeed', 0.1, 10).step(0.1).onChange(function(val){
       controls.rotateSpeed = val;
     });
-    mouseControlFolder.add(datParamMouse, 'zoomSpeed', 0.1, 10).step(0.1).onChange(function(val){
+    mouseControlFolder.add(trackballControlParams, 'zoomSpeed', 0.1, 10).step(0.1).onChange(function(val){
       controls.zoomSpeed = val;
     });
-    mouseControlFolder.add(datParamMouse, 'minDistance', 0, 100).step(1).onChange(function(val){
+    mouseControlFolder.add(trackballControlParams, 'minDistance', 0, 100).step(1).onChange(function(val){
       controls.minDistance = val;
     });
-    mouseControlFolder.add(datParamMouse, 'maxDistance', 100, 1000).step(1).onChange(function(val){
+    mouseControlFolder.add(trackballControlParams, 'maxDistance', 100, 1000).step(1).onChange(function(val){
       controls.maxDistance = val;
     });
-    mouseControlFolder.add(datParamMouse, 'panSpeed', 0, 10).step(1).onChange(function(val){
+    mouseControlFolder.add(trackballControlParams, 'panSpeed', 0, 10).step(1).onChange(function(val){
       controls.panSpeed = val;
     });
-    mouseControlFolder.add(datParamMouse, 'staticMoving').onChange(function(val){
+    mouseControlFolder.add(trackballControlParams, 'staticMoving').onChange(function(val){
       controls.staticMoving = val;
     });
-    mouseControlFolder.add(datParamMouse, 'dynamicDampingFactor', 0, 1).step(0.1).onChange(function(val){
+    mouseControlFolder.add(trackballControlParams, 'dynamicDampingFactor', 0, 1).step(0.1).onChange(function(val){
       controls.dynamicDampingFactor = val;
     });
-    mouseControlFolder.add(datParamMouse, 'noRotate').onChange(function(val){
+    mouseControlFolder.add(trackballControlParams, 'noRotate').onChange(function(val){
       controls.noRotate = val;
     });
-    mouseControlFolder.add(datParamMouse, 'noZoom').onChange(function(val){
+    mouseControlFolder.add(trackballControlParams, 'noZoom').onChange(function(val){
       controls.noZoom = val;
     });
-    mouseControlFolder.add(datParamMouse, 'noPan').onChange(function(val){
+    mouseControlFolder.add(trackballControlParams, 'noPan').onChange(function(val){
       controls.noPan = val;
     });
 
