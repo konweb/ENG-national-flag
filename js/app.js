@@ -239,7 +239,6 @@ window.addEventListener("DOMContentLoaded", function(){
       textMesh.position.set( fontParams.x, fontParams.y, fontParams.z );
       scene.add( textMesh );
     } );
-    console.log(textGeo);
   }
 
   /** 
