@@ -65,6 +65,7 @@ window.addEventListener("DOMContentLoaded", function(){
   stats_init();
   animate();
 
+
   /**
    * 初期設定
   */
@@ -313,6 +314,20 @@ window.addEventListener("DOMContentLoaded", function(){
       }
     }
   }
+
+  /**
+   * リサイズイベントの登録
+   * レンダラーとカメラを更新
+   * @return {[type]}   [description]
+   */
+  window.addEventListener('resize', function() {
+    var window_width  = window.innerWidth;
+    var window_height = window.innerHeight;
+
+    renderer.setSize(window_width, window_height);
+    camera.aspect = window_width / window_height;
+    camera.updateProjectionMatrix();
+  });
 
   /**
    * stats.js 初期設定
