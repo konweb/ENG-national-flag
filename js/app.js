@@ -272,7 +272,7 @@ window.addEventListener("DOMContentLoaded", function(){
     // update_camera();
 
     // 紙吹雪オブジェクト
-    // update_cube();
+    update_cube();
 
     // ライトオブジェクト
     update_light();
