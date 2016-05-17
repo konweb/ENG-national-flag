@@ -10,7 +10,7 @@ window.addEventListener("DOMContentLoaded", function(){
             };
   } )();
 
-  // マウスコントローラー
+  // マウスコントローラー 設定値
   var trackballControlParams = {
     'rotateSpeed'          : 0.5,   // 回転の速さ
     'zoomSpeed'            : 0.5,   // ズームの速さ
@@ -21,7 +21,17 @@ window.addEventListener("DOMContentLoaded", function(){
     'dynamicDampingFactor' : 0.2    // ダイナミックムーブ減衰値
   };
 
-  // Font
+  // ライト 設定値
+  var lightParams = {
+    'intensity'  : 2,
+    'angle'      : 0.7,
+    'castShadow' : true,
+    'x'          : 70,
+    'y'          : 90,
+    'z'          : 90
+  };
+
+  // Font 設定値
   var fontParams = {
     'color'         : '#095ebe',
     'size'          : 5,
@@ -39,7 +49,7 @@ window.addEventListener("DOMContentLoaded", function(){
       renderer,
       flagMesh,
       cubeParent,
-      lightGroup,
+      lighthelper,
       light,
       textGeo,
       textMesh,
@@ -140,20 +150,14 @@ window.addEventListener("DOMContentLoaded", function(){
     /*
      * 光源の作成
      */
-    var lightParent = new THREE.Object3D();
-    light           = new THREE.SpotLight( 0xffffff );
-
-    light.intensity  = 2.4;
-    light.angle      = 0.5;
-    light.castShadow = true;
-    light.position.set( 200, 250, 200 );
-
+    light = new THREE.SpotLight( 0xffffff );
+    settingLight();
     scene.add(light);
 
     /*
      * lightヘルパー
      */
-    var lighthelper = new THREE.SpotLightHelper(light);
+    lighthelper = new THREE.SpotLightHelper(light);
     scene.add(lighthelper);
 
     /* 
@@ -169,6 +173,21 @@ window.addEventListener("DOMContentLoaded", function(){
   
     // DOMにcanvasを追加
     canvas.appendChild( renderer.domElement );
+  }
+
+  /**
+   * 光源の設定
+   * @return {[type]} [description]
+   */
+  function settingLight() {
+    light.intensity  = lightParams.intensity;
+    light.angle      = lightParams.angle;
+    light.castShadow = lightParams.castShadow;
+    light.position.set( lightParams.x, lightParams.y, lightParams.z );
+
+    if (lighthelper) {
+      lighthelper.light = light;
+    }
   }
 
   /*
@@ -307,39 +326,21 @@ window.addEventListener("DOMContentLoaded", function(){
     stats.end();
   }
 
-  // GUIパラメータ ライト用
-  var DatParamLight = function() {
-    this.x         = 200;
-    this.y         = 50;
-    this.z         = 200;
-    this.intensity = 1.4;
-    this.angle     = 0.4;
-  };
-
   function dat_gui_init() {
     var gui                = new dat.GUI();
-    var datParamLight      = new DatParamLight();
     var lightFolder        = gui.addFolder('Lights');
     var mouseControlFolder = gui.addFolder('mouseControls');
     var fontFolder         = gui.addFolder('Fonts');
 
-    // 初期値のインスタンスを紐付ける
-    lightFolder.add(datParamLight, 'x', 0, 1000).step(1).onChange(function(val){
-      light.position.x = val;
-    });
-    lightFolder.add(datParamLight, 'y', 0, 1000).step(1).onChange(function(val){
-      light.position.y = val;
-    });
-    lightFolder.add(datParamLight, 'z', 0, 1000).step(1).onChange(function(val){
-      light.position.z = val;
-    });
-    lightFolder.add(datParamLight, 'intensity', 0, 10).step(1).onChange(function(val){
-      light.intensity = val;
-    });
-    lightFolder.add(datParamLight, 'angle', 0, 1.56).step(0.1).onChange(function(val){
-      light.angle = val;
-    });
+    // ライト
+    lightFolder.add(lightParams, 'intensity', 0, 10).step(0.1).onChange( settingLight );
+    lightFolder.add(lightParams, 'angle', 0, 1.56).step(0.1).onChange( settingLight );
+    lightFolder.add(lightParams, 'castShadow').onChange( settingLight );
+    lightFolder.add(lightParams, 'x', 0, 1000).step(1).onChange( settingLight );
+    lightFolder.add(lightParams, 'y', 0, 1000).step(1).onChange( settingLight );
+    lightFolder.add(lightParams, 'z', 0, 1000).step(1).onChange( settingLight );
 
+    // マウスコントローラー
     mouseControlFolder.add(trackballControlParams, 'rotateSpeed', 0.1, 10).step(0.1).onChange(function(val){
       controls.rotateSpeed = val;
     });
@@ -371,6 +372,7 @@ window.addEventListener("DOMContentLoaded", function(){
       controls.noPan = val;
     });
 
+    // Font
     fontFolder.addColor(fontParams, 'color').onChange( function(val) {
       textMesh.material.color = new THREE.Color( val );
     } );
