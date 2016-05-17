@@ -1,3 +1,6 @@
+var is_develop = true;
+var is_helper  = true;
+
 window.addEventListener("DOMContentLoaded", function(){
   var requestAnimationFrame = ( function(){
     return  window.requestAnimationFrame       ||
@@ -65,8 +68,12 @@ window.addEventListener("DOMContentLoaded", function(){
   
   init();
   render();
-  stats_init();
   animate();
+
+  if ( is_develop ) {
+    stats_init();
+    dat_gui_init();
+  }
 
 
   /**
@@ -107,8 +114,6 @@ window.addEventListener("DOMContentLoaded", function(){
     var flagMaterial  = new THREE.MeshLambertMaterial( {color: 0xffffff, side: THREE.DoubleSide, map: flagImg, alphaTest: 0.5} );
     flagMesh          = new THREE.Mesh(flag, flagMaterial);
     flagMesh.castShadow = true;
-    // flagMesh.shadowMapWidth = 2048;
-    // flagMesh.shadowMapHeight = 2048;
     flagMesh.position.y = 10;
     scene.add(flagMesh);
 
@@ -157,8 +162,10 @@ window.addEventListener("DOMContentLoaded", function(){
     /*
      * lightヘルパー
      */
-    lighthelper = new THREE.SpotLightHelper(light);
-    // scene.add(lighthelper);
+    if ( is_helper ) {
+      lighthelper = new THREE.SpotLightHelper(light);
+      scene.add(lighthelper);
+    }
 
     /* 
      * レンダラーを用意
@@ -265,10 +272,10 @@ window.addEventListener("DOMContentLoaded", function(){
     // update_camera();
 
     // 紙吹雪オブジェクト
-    update_cube();
+    // update_cube();
 
     // ライトオブジェクト
-    // update_light();
+    update_light();
 
     // stats.js
     update_stats();
@@ -321,6 +328,13 @@ window.addEventListener("DOMContentLoaded", function(){
         cubeParent.children[i].position.y = Math.random() * (200 - 30) + 30;
       }
     }
+  }
+
+  /**
+   * ライトの更新処理
+   */
+  function update_light() {
+    // light.position.set( lightParams.x++, lightParams.y++, lightParams.z );
   }
 
   /**
@@ -402,6 +416,4 @@ window.addEventListener("DOMContentLoaded", function(){
       textMesh.position.z = val;
     } );
   }
-
-  dat_gui_init();
 });
