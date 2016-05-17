@@ -42,13 +42,13 @@ window.addEventListener("DOMContentLoaded", function(){
      */
     controls = new THREE.TrackballControls( camera,canvas );
     controls.addEventListener( 'change', render );
-    controls.rotateSpeed          = 0.5;  // 回転の速さ
-    controls.zoomSpeed            = 0.5;  // ズームの速さ
-    controls.minDistance          = 10;   // 最小値
-    controls.maxDistance          = 300;  // 最大値
-    controls.panSpeed             = 1.0;  // パン速度の設定
+    controls.rotateSpeed          = 0.5;   // 回転の速さ
+    controls.zoomSpeed            = 0.5;   // ズームの速さ
+    controls.minDistance          = 10;    // 最小値
+    controls.maxDistance          = 300;   // 最大値
+    controls.panSpeed             = 1.0;   // パン速度の設定
     controls.staticMoving         = false; // true:スタティックムーブ false:ダイナミックムーブ
-    controls.dynamicDampingFactor = 0.2;  // ダイナミックムーブ減衰値
+    controls.dynamicDampingFactor = 0.2;   // ダイナミックムーブ減衰値
   
     /*
      * シーンの準備
