@@ -258,16 +258,17 @@ window.addEventListener("DOMContentLoaded", function(){
     stats.end();
   }
 
-  //GUIパラメータの準備
-  var Square = function() {
-    // right用
+  // GUIパラメータ ライト用
+  var DatParamLight = function() {
     this.x         = 200;
     this.y         = 50;
     this.z         = 200;
     this.intensity = 1.4;
     this.angle     = 0.4;
+  };
 
-    // マウスコントローラー用
+  // GUIパラメータ マウスコントローラー用
+  var DatParamMouse = function() {
     this.rotateSpeed          = 0.5;
     this.zoomSpeed            = 0.5;
     this.minDistance          = 10;
@@ -281,56 +282,57 @@ window.addEventListener("DOMContentLoaded", function(){
   };
 
   function dat_gui_init() {
-    var square      = new Square();
-    var gui         = new dat.GUI();
-    var lightFolder = gui.addFolder('Lights');
-    var mouseControl = gui.addFolder('mouseControls');
+    var gui           = new dat.GUI();
+    var datParamLight = new DatParamLight();
+    var datParamMouse = new DatParamMouse();
+    var lightFolder   = gui.addFolder('Lights');
+    var mouseControl  = gui.addFolder('mouseControls');
 
     // 初期値のインスタンスを紐付ける
-    lightFolder.add(square, 'x', 0, 1000).step(1).onChange(function(val){
+    lightFolder.add(datParamLight, 'x', 0, 1000).step(1).onChange(function(val){
       light.position.x = val;
     });
-    lightFolder.add(square, 'y', 0, 1000).step(1).onChange(function(val){
+    lightFolder.add(datParamLight, 'y', 0, 1000).step(1).onChange(function(val){
       light.position.y = val;
     });
-    lightFolder.add(square, 'z', 0, 1000).step(1).onChange(function(val){
+    lightFolder.add(datParamLight, 'z', 0, 1000).step(1).onChange(function(val){
       light.position.z = val;
     });
-    lightFolder.add(square, 'intensity', 0, 10).step(1).onChange(function(val){
+    lightFolder.add(datParamLight, 'intensity', 0, 10).step(1).onChange(function(val){
       light.intensity = val;
     });
-    lightFolder.add(square, 'angle', 0, 1.56).step(0.1).onChange(function(val){
+    lightFolder.add(datParamLight, 'angle', 0, 1.56).step(0.1).onChange(function(val){
       light.angle = val;
     });
 
-    mouseControl.add(square, 'rotateSpeed', 0.1, 10).step(0.1).onChange(function(val){
+    mouseControl.add(datParamMouse, 'rotateSpeed', 0.1, 10).step(0.1).onChange(function(val){
       controls.rotateSpeed = val;
     });
-    mouseControl.add(square, 'zoomSpeed', 0.1, 10).step(0.1).onChange(function(val){
+    mouseControl.add(datParamMouse, 'zoomSpeed', 0.1, 10).step(0.1).onChange(function(val){
       controls.zoomSpeed = val;
     });
-    mouseControl.add(square, 'minDistance', 0, 100).step(1).onChange(function(val){
+    mouseControl.add(datParamMouse, 'minDistance', 0, 100).step(1).onChange(function(val){
       controls.minDistance = val;
     });
-    mouseControl.add(square, 'maxDistance', 100, 1000).step(1).onChange(function(val){
+    mouseControl.add(datParamMouse, 'maxDistance', 100, 1000).step(1).onChange(function(val){
       controls.maxDistance = val;
     });
-    mouseControl.add(square, 'panSpeed', 0, 10).step(1).onChange(function(val){
+    mouseControl.add(datParamMouse, 'panSpeed', 0, 10).step(1).onChange(function(val){
       controls.panSpeed = val;
     });
-    mouseControl.add(square, 'staticMoving').onChange(function(val){
+    mouseControl.add(datParamMouse, 'staticMoving').onChange(function(val){
       controls.staticMoving = val;
     });
-    mouseControl.add(square, 'dynamicDampingFactor', 0, 1).step(0.1).onChange(function(val){
+    mouseControl.add(datParamMouse, 'dynamicDampingFactor', 0, 1).step(0.1).onChange(function(val){
       controls.dynamicDampingFactor = val;
     });
-    mouseControl.add(square, 'noRotate').onChange(function(val){
+    mouseControl.add(datParamMouse, 'noRotate').onChange(function(val){
       controls.noRotate = val;
     });
-    mouseControl.add(square, 'noZoom').onChange(function(val){
+    mouseControl.add(datParamMouse, 'noZoom').onChange(function(val){
       controls.noZoom = val;
     });
-    mouseControl.add(square, 'noPan').onChange(function(val){
+    mouseControl.add(datParamMouse, 'noPan').onChange(function(val){
       controls.noPan = val;
     });
   }
