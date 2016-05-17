@@ -85,13 +85,7 @@ window.addEventListener("DOMContentLoaded", function(){
      */
     controls = new THREE.TrackballControls( camera,canvas );
     controls.addEventListener( 'change', render );
-    controls.rotateSpeed          = trackballControlParams.rotateSpeed;
-    controls.zoomSpeed            = trackballControlParams.zoomSpeed;
-    controls.minDistance          = trackballControlParams.minDistance;
-    controls.maxDistance          = trackballControlParams.maxDistance;
-    controls.panSpeed             = trackballControlParams.panSpeed;
-    controls.staticMoving         = trackballControlParams.staticMoving;
-    controls.dynamicDampingFactor = trackballControlParams.dynamicDampingFactor;
+    settingTrackballControls();
   
     /*
      * シーンの準備
@@ -173,6 +167,20 @@ window.addEventListener("DOMContentLoaded", function(){
   
     // DOMにcanvasを追加
     canvas.appendChild( renderer.domElement );
+  }
+
+  /**
+   * マウスコントローラー設定
+   * @return {[type]} [description]
+   */
+  function settingTrackballControls() {
+    controls.rotateSpeed          = trackballControlParams.rotateSpeed;
+    controls.zoomSpeed            = trackballControlParams.zoomSpeed;
+    controls.minDistance          = trackballControlParams.minDistance;
+    controls.maxDistance          = trackballControlParams.maxDistance;
+    controls.panSpeed             = trackballControlParams.panSpeed;
+    controls.staticMoving         = trackballControlParams.staticMoving;
+    controls.dynamicDampingFactor = trackballControlParams.dynamicDampingFactor;
   }
 
   /**
@@ -341,36 +349,16 @@ window.addEventListener("DOMContentLoaded", function(){
     lightFolder.add(lightParams, 'z', 0, 1000).step(1).onChange( settingLight );
 
     // マウスコントローラー
-    mouseControlFolder.add(trackballControlParams, 'rotateSpeed', 0.1, 10).step(0.1).onChange(function(val){
-      controls.rotateSpeed = val;
-    });
-    mouseControlFolder.add(trackballControlParams, 'zoomSpeed', 0.1, 10).step(0.1).onChange(function(val){
-      controls.zoomSpeed = val;
-    });
-    mouseControlFolder.add(trackballControlParams, 'minDistance', 0, 100).step(1).onChange(function(val){
-      controls.minDistance = val;
-    });
-    mouseControlFolder.add(trackballControlParams, 'maxDistance', 100, 1000).step(1).onChange(function(val){
-      controls.maxDistance = val;
-    });
-    mouseControlFolder.add(trackballControlParams, 'panSpeed', 0, 10).step(1).onChange(function(val){
-      controls.panSpeed = val;
-    });
-    mouseControlFolder.add(trackballControlParams, 'staticMoving').onChange(function(val){
-      controls.staticMoving = val;
-    });
-    mouseControlFolder.add(trackballControlParams, 'dynamicDampingFactor', 0, 1).step(0.1).onChange(function(val){
-      controls.dynamicDampingFactor = val;
-    });
-    mouseControlFolder.add(trackballControlParams, 'noRotate').onChange(function(val){
-      controls.noRotate = val;
-    });
-    mouseControlFolder.add(trackballControlParams, 'noZoom').onChange(function(val){
-      controls.noZoom = val;
-    });
-    mouseControlFolder.add(trackballControlParams, 'noPan').onChange(function(val){
-      controls.noPan = val;
-    });
+    mouseControlFolder.add(trackballControlParams, 'rotateSpeed', 0.1, 10).step(0.1).onChange( settingTrackballControls );
+    mouseControlFolder.add(trackballControlParams, 'zoomSpeed', 0.1, 10).step(0.1).onChange( settingTrackballControls );
+    mouseControlFolder.add(trackballControlParams, 'minDistance', 0, 100).step(1).onChange( settingTrackballControls );
+    mouseControlFolder.add(trackballControlParams, 'maxDistance', 100, 1000).step(1).onChange( settingTrackballControls );
+    mouseControlFolder.add(trackballControlParams, 'panSpeed', 0, 10).step(1).onChange( settingTrackballControls );
+    mouseControlFolder.add(trackballControlParams, 'staticMoving').onChange( settingTrackballControls );
+    mouseControlFolder.add(trackballControlParams, 'dynamicDampingFactor', 0, 1).step(0.1).onChange( settingTrackballControls );
+    mouseControlFolder.add(trackballControlParams, 'noRotate').onChange( settingTrackballControls );
+    mouseControlFolder.add(trackballControlParams, 'noZoom').onChange( settingTrackballControls );
+    mouseControlFolder.add(trackballControlParams, 'noPan').onChange( settingTrackballControls );
 
     // Font
     fontFolder.addColor(fontParams, 'color').onChange( function(val) {
