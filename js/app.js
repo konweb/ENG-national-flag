@@ -79,7 +79,7 @@ window.addEventListener("DOMContentLoaded", function(){
         height = window.innerHeight;
 
     camera = new THREE.PerspectiveCamera(45, width/height, 1, 1000);
-    camera.position.set(0, 20, 120);
+    camera.position.set(-20, 20, 100);
 
     /*
      * マウスコントロール
@@ -257,7 +257,7 @@ window.addEventListener("DOMContentLoaded", function(){
     // update_camera();
 
     // 紙吹雪オブジェクト
-    // update_cube();
+    update_cube();
 
     // ライトオブジェクト
     // update_light();
@@ -354,6 +354,8 @@ window.addEventListener("DOMContentLoaded", function(){
     var lightFolder        = gui.addFolder('Lights');
     var mouseControlFolder = gui.addFolder('mouseControls');
     var fontFolder         = gui.addFolder('Fonts');
+
+    gui.close();
 
     // ライト
     lightFolder.add(lightParams, 'intensity', 0, 10).step(0.1).onChange( settingLight );
