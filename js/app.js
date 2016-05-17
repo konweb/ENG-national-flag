@@ -105,7 +105,7 @@ window.addEventListener("DOMContentLoaded", function(){
           size: 30,
           height: 4,
           curveSegments: 3,
-          font: "helvetiker",
+          font_family_name: "Helvetiker",
           weight: "bold",
           style: "normal",
           bevelThickness: 1,
