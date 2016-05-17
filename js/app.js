@@ -35,17 +35,20 @@ window.addEventListener("DOMContentLoaded", function(){
         height = window.innerHeight;
 
     camera = new THREE.PerspectiveCamera(45, width/height, 1, 1000);
-    camera.position.set(10, 15, -50);
+    camera.position.set(0, 10, 70);
 
     /*
      * マウスコントロール
      */
     controls = new THREE.TrackballControls( camera,canvas );
     controls.addEventListener( 'change', render );
-    controls.rotateSpeed = 0.5; //回転の速さ
-    controls.zoomSpeed   = 0.5; //ズームの速さ
-    controls.minDistance = 10; //最小値
-    controls.maxDistance = 300; //最大値
+    controls.rotateSpeed          = 0.5;  // 回転の速さ
+    controls.zoomSpeed            = 0.5;  // ズームの速さ
+    controls.minDistance          = 10;   // 最小値
+    controls.maxDistance          = 300;  // 最大値
+    controls.panSpeed             = 1.0;  // パン速度の設定
+    controls.staticMoving         = false; // true:スタティックムーブ false:ダイナミックムーブ
+    controls.dynamicDampingFactor = 0.2;  // ダイナミックムーブ減衰値
   
     /*
      * シーンの準備
@@ -57,12 +60,12 @@ window.addEventListener("DOMContentLoaded", function(){
     /* 
      * 旗の作成
      */
-    var flag         = new THREE.PlaneGeometry(15, 10, SEGX, SEGY);
-    var flagImg      = THREE.ImageUtils.loadTexture("/images/flag.png", {}, function() {renderer.render(scene, camera);});
-    var flagMaterial = new THREE.MeshLambertMaterial( {color: 0xffffff, side: THREE.DoubleSide, map: flagImg} );
+    var flag         = new THREE.PlaneGeometry(25, 25, SEGX, SEGY);
+    var flagImg      = THREE.ImageUtils.loadTexture("/images/leicestercity_logo.png", {}, function() {renderer.render(scene, camera);});
+    var flagMaterial = new THREE.MeshLambertMaterial( {color: 0xffffff, side: THREE.DoubleSide, map: flagImg, alphaTest: 0.5} );
     flagMesh         = new THREE.Mesh(flag, flagMaterial);
     flagMesh.castShadow = true;
-    flagMesh.position.y = 3;
+    flagMesh.position.y = 10;
     scene.add(flagMesh);
 
     /*
@@ -100,7 +103,7 @@ window.addEventListener("DOMContentLoaded", function(){
      * テキストの作成
      */
      var textGeometry = new THREE.TextGeometry(
-        'UEFA EURO 2016',
+        'Leicester City Premier League Winners',
         {
           size: 30,
           height: 4,
@@ -127,7 +130,7 @@ window.addEventListener("DOMContentLoaded", function(){
     light.intensity  = 2.4;
     light.angle      = 0.5;
     light.castShadow = true;
-    light.position.set( 200, 250, -200 );
+    light.position.set( 200, 250, 200 );
 
     scene.add(light);
 
@@ -177,7 +180,7 @@ window.addEventListener("DOMContentLoaded", function(){
     // update_camera();
 
     // 紙吹雪オブジェクト
-    update_cube();
+    // update_cube();
 
     // ライトオブジェクト
     // update_light();
@@ -257,32 +260,78 @@ window.addEventListener("DOMContentLoaded", function(){
 
   //GUIパラメータの準備
   var Square = function() {
+    // right用
     this.x         = 200;
     this.y         = 50;
     this.z         = 200;
     this.intensity = 1.4;
     this.angle     = 0.4;
+
+    // マウスコントローラー用
+    this.rotateSpeed          = 0.5;
+    this.zoomSpeed            = 0.5;
+    this.minDistance          = 10;
+    this.maxDistance          = 300;
+    this.panSpeed             = 1.0;
+    this.staticMoving         = false;
+    this.dynamicDampingFactor = 0.2;
+    this.noRotate             = false;
+    this.noZoom               = false;
+    this.noPan                = false;
   };
 
   function dat_gui_init() {
-    var square = new Square();
-    var gui    = new dat.GUI();
+    var square      = new Square();
+    var gui         = new dat.GUI();
+    var lightFolder = gui.addFolder('Lights');
+    var mouseControl = gui.addFolder('mouseControls');
 
     // 初期値のインスタンスを紐付ける
-    gui.add(square, 'x', 0, 1000).onChange(function(val){
+    lightFolder.add(square, 'x', 0, 1000).step(1).onChange(function(val){
       light.position.x = val;
     });
-    gui.add(square, 'y', 0, 1000).onChange(function(val){
+    lightFolder.add(square, 'y', 0, 1000).step(1).onChange(function(val){
       light.position.y = val;
     });
-    gui.add(square, 'z', 0, 1000).onChange(function(val){
+    lightFolder.add(square, 'z', 0, 1000).step(1).onChange(function(val){
       light.position.z = val;
     });
-    gui.add(square, 'intensity', 0, 10).onChange(function(val){
+    lightFolder.add(square, 'intensity', 0, 10).step(1).onChange(function(val){
       light.intensity = val;
     });
-    gui.add(square, 'angle', 0, 1.56).onChange(function(val){
+    lightFolder.add(square, 'angle', 0, 1.56).step(0.1).onChange(function(val){
       light.angle = val;
+    });
+
+    mouseControl.add(square, 'rotateSpeed', 0.1, 10).step(0.1).onChange(function(val){
+      controls.rotateSpeed = val;
+    });
+    mouseControl.add(square, 'zoomSpeed', 0.1, 10).step(0.1).onChange(function(val){
+      controls.zoomSpeed = val;
+    });
+    mouseControl.add(square, 'minDistance', 0, 100).step(1).onChange(function(val){
+      controls.minDistance = val;
+    });
+    mouseControl.add(square, 'maxDistance', 100, 1000).step(1).onChange(function(val){
+      controls.maxDistance = val;
+    });
+    mouseControl.add(square, 'panSpeed', 0, 10).step(1).onChange(function(val){
+      controls.panSpeed = val;
+    });
+    mouseControl.add(square, 'staticMoving').onChange(function(val){
+      controls.staticMoving = val;
+    });
+    mouseControl.add(square, 'dynamicDampingFactor', 0, 1).step(0.1).onChange(function(val){
+      controls.dynamicDampingFactor = val;
+    });
+    mouseControl.add(square, 'noRotate').onChange(function(val){
+      controls.noRotate = val;
+    });
+    mouseControl.add(square, 'noZoom').onChange(function(val){
+      controls.noZoom = val;
+    });
+    mouseControl.add(square, 'noPan').onChange(function(val){
+      controls.noPan = val;
     });
   }
 
