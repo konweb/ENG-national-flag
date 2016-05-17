@@ -10,7 +10,29 @@ window.addEventListener("DOMContentLoaded", function(){
             };
   } )();
 
-  var camera,controls,scene,renderer,flagMesh,cubeParent,lightGroup,light;
+  // Font
+  var fontParams = {
+    'color'         : '#095ebe',
+    'size'          : 5,
+    'height'        : 1,
+    'curveSegments' : 1,
+    'bevelEnabled'  : false,
+    'x'             : 0,
+    'y'             : 30,
+    'z'             : 0
+  };
+
+  var camera,
+      controls,
+      scene,
+      renderer,
+      flagMesh,
+      cubeParent,
+      lightGroup,
+      light,
+      textGeo,
+      textMesh,
+      textMaterial;
   var SEGX      = 64;
   var SEGY      = 64;
   var PAPER_NUM = 2000;
@@ -35,7 +57,7 @@ window.addEventListener("DOMContentLoaded", function(){
         height = window.innerHeight;
 
     camera = new THREE.PerspectiveCamera(45, width/height, 1, 1000);
-    camera.position.set(0, 10, 70);
+    camera.position.set(0, 20, 120);
 
     /*
      * マウスコントロール
@@ -102,24 +124,7 @@ window.addEventListener("DOMContentLoaded", function(){
     /*
      * テキストの作成
      */
-     var textGeometry = new THREE.TextGeometry(
-        'Leicester City Premier League Winners',
-        {
-          size: 30,
-          height: 4,
-          curveSegments: 3,
-          font_family_name: "Helvetiker",
-          weight: "bold",
-          style: "normal",
-          bevelThickness: 1,
-          bevelSize: 2,
-          bevelEnabled: true
-        }
-    );
-    var textMaterial = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
-    var textMesh     = new THREE.Mesh( textGeometry, textMaterial );
-    scene.add( textMesh );
-
+    createFont();
 
     /*
      * 光源の作成
@@ -155,6 +160,39 @@ window.addEventListener("DOMContentLoaded", function(){
     canvas.appendChild( renderer.domElement );
   }
 
+  /*
+   * テキストの作成
+   */
+  function createFont() {
+    // オブジェクトが存在する場合は、一旦削除する
+    if ( textMesh ) {
+      scene.remove( textMesh );
+      textGeo.dispose();
+      textMaterial.dispose();
+    }
+
+    var loader = new THREE.FontLoader();
+    loader.load( '/js/helvetiker_bold.typeface.js', function ( font ) {
+      textGeo = new THREE.TextGeometry(
+        'Leicester City Premier League Winners',
+        {
+          font: font,
+          size: fontParams.size,
+          height: fontParams.height,
+          curveSegments: fontParams.curveSegments,
+          bevelEnabled: fontParams.bevelEnabled
+        }
+      );
+      textMaterial = new THREE.MeshPhongMaterial( { color: fontParams.color } );
+      textMesh     = new THREE.Mesh( textGeo, textMaterial );
+
+      // 中央配置
+      THREE.GeometryUtils.center( textGeo );
+
+      textMesh.position.set( fontParams.x, fontParams.y, fontParams.z );
+      scene.add( textMesh );
+    } );
+  }
 
   /** 
    * 描画処理
@@ -282,11 +320,12 @@ window.addEventListener("DOMContentLoaded", function(){
   };
 
   function dat_gui_init() {
-    var gui           = new dat.GUI();
-    var datParamLight = new DatParamLight();
-    var datParamMouse = new DatParamMouse();
-    var lightFolder   = gui.addFolder('Lights');
-    var mouseControl  = gui.addFolder('mouseControls');
+    var gui                = new dat.GUI();
+    var datParamLight      = new DatParamLight();
+    var datParamMouse      = new DatParamMouse();
+    var lightFolder        = gui.addFolder('Lights');
+    var mouseControlFolder = gui.addFolder('mouseControls');
+    var fontFolder         = gui.addFolder('Fonts');
 
     // 初期値のインスタンスを紐付ける
     lightFolder.add(datParamLight, 'x', 0, 1000).step(1).onChange(function(val){
@@ -305,36 +344,52 @@ window.addEventListener("DOMContentLoaded", function(){
       light.angle = val;
     });
 
-    mouseControl.add(datParamMouse, 'rotateSpeed', 0.1, 10).step(0.1).onChange(function(val){
+    mouseControlFolder.add(datParamMouse, 'rotateSpeed', 0.1, 10).step(0.1).onChange(function(val){
       controls.rotateSpeed = val;
     });
-    mouseControl.add(datParamMouse, 'zoomSpeed', 0.1, 10).step(0.1).onChange(function(val){
+    mouseControlFolder.add(datParamMouse, 'zoomSpeed', 0.1, 10).step(0.1).onChange(function(val){
       controls.zoomSpeed = val;
     });
-    mouseControl.add(datParamMouse, 'minDistance', 0, 100).step(1).onChange(function(val){
+    mouseControlFolder.add(datParamMouse, 'minDistance', 0, 100).step(1).onChange(function(val){
       controls.minDistance = val;
     });
-    mouseControl.add(datParamMouse, 'maxDistance', 100, 1000).step(1).onChange(function(val){
+    mouseControlFolder.add(datParamMouse, 'maxDistance', 100, 1000).step(1).onChange(function(val){
       controls.maxDistance = val;
     });
-    mouseControl.add(datParamMouse, 'panSpeed', 0, 10).step(1).onChange(function(val){
+    mouseControlFolder.add(datParamMouse, 'panSpeed', 0, 10).step(1).onChange(function(val){
       controls.panSpeed = val;
     });
-    mouseControl.add(datParamMouse, 'staticMoving').onChange(function(val){
+    mouseControlFolder.add(datParamMouse, 'staticMoving').onChange(function(val){
       controls.staticMoving = val;
     });
-    mouseControl.add(datParamMouse, 'dynamicDampingFactor', 0, 1).step(0.1).onChange(function(val){
+    mouseControlFolder.add(datParamMouse, 'dynamicDampingFactor', 0, 1).step(0.1).onChange(function(val){
       controls.dynamicDampingFactor = val;
     });
-    mouseControl.add(datParamMouse, 'noRotate').onChange(function(val){
+    mouseControlFolder.add(datParamMouse, 'noRotate').onChange(function(val){
       controls.noRotate = val;
     });
-    mouseControl.add(datParamMouse, 'noZoom').onChange(function(val){
+    mouseControlFolder.add(datParamMouse, 'noZoom').onChange(function(val){
       controls.noZoom = val;
     });
-    mouseControl.add(datParamMouse, 'noPan').onChange(function(val){
+    mouseControlFolder.add(datParamMouse, 'noPan').onChange(function(val){
       controls.noPan = val;
     });
+
+    fontFolder.addColor(fontParams, 'color').onChange( function(val) {
+      textMesh.material.color = new THREE.Color( val );
+    } );
+    fontFolder.add(fontParams, 'size', 1, 20).step(1).onChange( createFont );
+    fontFolder.add(fontParams, 'height', 1, 20).step(1).onChange( createFont );
+    fontFolder.add(fontParams, 'curveSegments', 1, 20).step(1).onChange( createFont );
+    fontFolder.add(fontParams, 'x', -100, 100).step(1).onChange( function(val) {
+      textMesh.position.x = val;
+    } );
+    fontFolder.add(fontParams, 'y', -100, 100).step(1).onChange( function(val) {
+      textMesh.position.y = val;
+    } );
+    fontFolder.add(fontParams, 'z', -100, 100).step(1).onChange( function(val) {
+      textMesh.position.z = val;
+    } );
   }
 
   dat_gui_init();
