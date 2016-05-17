@@ -211,7 +211,7 @@ window.addEventListener("DOMContentLoaded", function(){
     }
 
     var loader = new THREE.FontLoader();
-    loader.load( '/js/helvetiker_bold.typeface.js', function ( font ) {
+    loader.load( 'js/helvetiker_bold.typeface.js', function ( font ) {
       textGeo = new THREE.TextGeometry(
         'Leicester City Premier League Winners',
         {
