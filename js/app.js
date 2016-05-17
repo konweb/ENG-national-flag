@@ -1,5 +1,5 @@
 var is_develop = true;
-var is_helper  = true;
+var is_helper  = false;
 
 window.addEventListener("DOMContentLoaded", function(){
   var requestAnimationFrame = ( function(){
