@@ -99,7 +99,7 @@ window.addEventListener("DOMContentLoaded", function(){
      * 旗の作成
      */
     var flag         = new THREE.PlaneGeometry(25, 25, SEGX, SEGY);
-    var flagImg      = THREE.ImageUtils.loadTexture("/images/leicestercity_logo.png", {}, function() {renderer.render(scene, camera);});
+    var flagImg      = THREE.ImageUtils.loadTexture("images/leicestercity_logo.png", {}, function() {renderer.render(scene, camera);});
     var flagMaterial = new THREE.MeshLambertMaterial( {color: 0xffffff, side: THREE.DoubleSide, map: flagImg, alphaTest: 0.5} );
     flagMesh         = new THREE.Mesh(flag, flagMaterial);
     flagMesh.castShadow = true;
@@ -112,7 +112,7 @@ window.addEventListener("DOMContentLoaded", function(){
     var plane = new THREE.PlaneGeometry(100, 100, 64, 64);
 
     // 画像を読み込み 画像が読み込まれる前に描画されている？ため上手く読み込めない。renderer.render()を走らせる
-    var lawnImg       = THREE.ImageUtils.loadTexture("/images/lawn.png", {}, function() {renderer.render(scene, camera);});
+    var lawnImg       = THREE.ImageUtils.loadTexture("images/lawn.png", {}, function() {renderer.render(scene, camera);});
     var planeMaterial = new THREE.MeshPhongMaterial({side: THREE.DoubleSide, map: lawnImg});
     var planeMesh     = new THREE.Mesh(plane, planeMaterial);
 
@@ -153,7 +153,7 @@ window.addEventListener("DOMContentLoaded", function(){
      * lightヘルパー
      */
     lighthelper = new THREE.SpotLightHelper(light);
-    scene.add(lighthelper);
+    // scene.add(lighthelper);
 
     /* 
      * レンダラーを用意
