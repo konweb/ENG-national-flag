@@ -18,7 +18,10 @@ window.addEventListener("DOMContentLoaded", function(){
     'maxDistance'          : 300,   // 最大値
     'panSpeed'             : 1.0,   // パン速度の設定
     'staticMoving'         : false, // true:スタティックムーブ false:ダイナミックムーブ
-    'dynamicDampingFactor' : 0.2    // ダイナミックムーブ減衰値
+    'dynamicDampingFactor' : 0.2,   // ダイナミックムーブ減衰値
+    'noRotate'             : false,
+    'noZoom'               : false,
+    'noPan'                : false
   };
 
   // ライト 設定値
@@ -35,7 +38,7 @@ window.addEventListener("DOMContentLoaded", function(){
   var fontParams = {
     'color'         : '#095ebe',
     'size'          : 5,
-    'height'        : 1,
+    'height'        : 0,
     'curveSegments' : 1,
     'bevelEnabled'  : false,
     'x'             : 0,
@@ -104,6 +107,8 @@ window.addEventListener("DOMContentLoaded", function(){
     var flagMaterial  = new THREE.MeshLambertMaterial( {color: 0xffffff, side: THREE.DoubleSide, map: flagImg, alphaTest: 0.5} );
     flagMesh          = new THREE.Mesh(flag, flagMaterial);
     flagMesh.castShadow = true;
+    // flagMesh.shadowMapWidth = 2048;
+    // flagMesh.shadowMapHeight = 2048;
     flagMesh.position.y = 10;
     scene.add(flagMesh);
 
@@ -182,6 +187,9 @@ window.addEventListener("DOMContentLoaded", function(){
     controls.panSpeed             = trackballControlParams.panSpeed;
     controls.staticMoving         = trackballControlParams.staticMoving;
     controls.dynamicDampingFactor = trackballControlParams.dynamicDampingFactor;
+    controls.noRotate             = trackballControlParams.noRotate;
+    controls.noZoom               = trackballControlParams.noZoom;
+    controls.noPan                = trackballControlParams.noPan;
   }
 
   /**
@@ -231,6 +239,7 @@ window.addEventListener("DOMContentLoaded", function(){
       textMesh.position.set( fontParams.x, fontParams.y, fontParams.z );
       scene.add( textMesh );
     } );
+    console.log(textGeo);
   }
 
   /** 
@@ -382,7 +391,7 @@ window.addEventListener("DOMContentLoaded", function(){
       textMesh.material.color = new THREE.Color( val );
     } );
     fontFolder.add(fontParams, 'size', 1, 20).step(1).onChange( createFont );
-    fontFolder.add(fontParams, 'height', 1, 20).step(1).onChange( createFont );
+    fontFolder.add(fontParams, 'height', 0, 20).step(1).onChange( createFont );
     fontFolder.add(fontParams, 'curveSegments', 1, 20).step(1).onChange( createFont );
     fontFolder.add(fontParams, 'x', -100, 100).step(1).onChange( function(val) {
       textMesh.position.x = val;
