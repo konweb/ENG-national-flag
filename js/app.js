@@ -35,7 +35,7 @@ window.addEventListener("DOMContentLoaded", function(){
         height = window.innerHeight;
 
     camera = new THREE.PerspectiveCamera(45, width/height, 1, 1000);
-    camera.position.set(0, 5, 15);
+    camera.position.set(10, 15, -50);
 
     /*
      * マウスコントロール
@@ -97,6 +97,28 @@ window.addEventListener("DOMContentLoaded", function(){
     scene.add( cubeParent );
 
     /*
+     * テキストの作成
+     */
+     var textGeometry = new THREE.TextGeometry(
+        'UEFA EURO 2016',
+        {
+          size: 30,
+          height: 4,
+          curveSegments: 3,
+          font: "helvetiker",
+          weight: "bold",
+          style: "normal",
+          bevelThickness: 1,
+          bevelSize: 2,
+          bevelEnabled: true
+        }
+    );
+    var textMaterial = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
+    var textMesh     = new THREE.Mesh( textGeometry, textMaterial );
+    scene.add( textMesh );
+
+
+    /*
      * 光源の作成
      */
     var lightParent = new THREE.Object3D();
@@ -105,7 +127,7 @@ window.addEventListener("DOMContentLoaded", function(){
     light.intensity  = 2.4;
     light.angle      = 0.5;
     light.castShadow = true;
-    light.position.set( 200, 250, 200 );
+    light.position.set( 200, 250, -200 );
 
     scene.add(light);
 
